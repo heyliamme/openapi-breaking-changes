@@ -1,0 +1,187 @@
+openapi: 3.1.0
+info:
+  title: Petstore
+  version: 2.0.0
+servers:
+  - url: https://api.petstore.example/v2
+security:
+  - apiKey: []
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List pets
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            format: int32
+            maximum: 50
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/PetStatus'
+        - name: X-Tenant
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A page of pets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    post:
+      operationId: addPet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+      callbacks:
+        adopted:
+          '{$request.body#/callbackUrl}':
+            post:
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      required: [petId]
+                      properties:
+                        petId:
+                          type: string
+                        adoptedAt:
+                          type: string
+                          format: date-time
+                        adopter:
+                          type: string
+              responses:
+                '204':
+                  description: Received
+  /pets/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getPet
+      deprecated: true
+      responses:
+        '200':
+          description: A pet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        '404':
+          description: Not found
+    patch:
+      operationId: updatePet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '200':
+          description: Updated
+  /pets/{id}/images:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: listPetPhotos
+      summary: List a pet's photos
+      parameters:
+        - name: size
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [small, large]
+      responses:
+        '200':
+          description: Photo URLs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uri
+webhooks:
+  petAdopted:
+    post:
+      summary: A pet found a home
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: Received
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    PetStatus:
+      type: string
+      enum: [available, pending, sold, adopted]
+    NewPet:
+      type: object
+      required: [name, species]
+      properties:
+        name:
+          type: string
+          maxLength: 32
+        species:
+          type: string
+        birthday:
+          type: [string, 'null']
+          format: date
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/NewPet'
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: integer
+              format: int64
+            status:
+              $ref: '#/components/schemas/PetStatus'
+            owner:
+              $ref: '#/components/schemas/Owner'
+    Owner:
+      type: object
+      properties:
+        name:
+          type: string
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'

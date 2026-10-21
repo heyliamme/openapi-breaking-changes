@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2f3c"/>
+      <stop offset="1" stop-color="#101c25"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bg)"/>
+  <g transform="translate(128 128) scale(1.1) translate(-128 -128)">
+  <!-- three endpoints: method badge + contract line -->
+  <rect x="44" y="62" width="46" height="26" rx="13" fill="#3fbf9b"/>
+  <rect x="104" y="68" width="108" height="14" rx="7" fill="#d6e2ea"/>
+  <rect x="44" y="115" width="46" height="26" rx="13" fill="#4d9bf0"/>
+  <rect x="104" y="121" width="108" height="14" rx="7" fill="#d6e2ea"/>
+  <!-- the one that broke -->
+  <rect x="44" y="168" width="46" height="26" rx="13" fill="#ff6a55"/>
+  <path d="M111 174 H136 L142 181 L136 188 H111 A7 7 0 0 1 111 174 Z" fill="#ff6a55"/>
+  <path d="M172 174 H205 A7 7 0 0 1 205 188 H172 L178 181 Z" fill="#ff6a55"/>
+  <path d="M153 158 L164 171 L151 181 L163 192 L154 205" fill="none" stroke="#ffd2c9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

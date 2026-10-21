@@ -1,0 +1,303 @@
+{
+  "name": "openapi-breaking-changes",
+  "displayName": "OpenAPI Breaking Changes",
+  "description": "Diff two versions of an OpenAPI or Swagger spec and see what changed for API consumers, with breaking changes flagged. Compare with any Git branch or tag, another file, or an open diff.",
+  "version": "0.1.0",
+  "publisher": "heyliam",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#13212b",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heyliamme/openapi-breaking-changes"
+  },
+  "bugs": {
+    "url": "https://github.com/heyliamme/openapi-breaking-changes/issues"
+  },
+  "homepage": "https://github.com/heyliamme/openapi-breaking-changes#readme",
+  "qna": "https://github.com/heyliamme/openapi-breaking-changes/issues",
+  "pricing": "Free",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters",
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "openapi",
+    "swagger",
+    "openapi diff",
+    "swagger diff",
+    "breaking changes",
+    "api diff",
+    "api changelog",
+    "rest api",
+    "oas",
+    "api contract"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:yaml",
+    "onLanguage:json",
+    "onLanguage:jsonc",
+    "onWebviewPanel:openapiBreakingChanges"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "restrictedConfigurations": [
+        "openapiBreakingChanges.ignore",
+        "openapiBreakingChanges.baseRef"
+      ],
+      "description": "In Restricted Mode, ignore rules and the baseline ref from the workspace are not applied, so a repository can't hide its own breaking changes, and nothing that needs Git runs."
+    },
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "Comparing with a Git ref and the Problems panel check need a local Git repository."
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "openapiBreakingChanges.compareWithRef",
+        "title": "Compare with Git Branch or Tag…",
+        "category": "OpenAPI Breaking Changes",
+        "icon": "$(git-compare)"
+      },
+      {
+        "command": "openapiBreakingChanges.compareWithHead",
+        "title": "Compare with HEAD",
+        "category": "OpenAPI Breaking Changes"
+      },
+      {
+        "command": "openapiBreakingChanges.compareWithFile",
+        "title": "Compare with Another Spec…",
+        "category": "OpenAPI Breaking Changes"
+      },
+      {
+        "command": "openapiBreakingChanges.releaseNotes",
+        "title": "Write Release Notes…",
+        "category": "OpenAPI Breaking Changes",
+        "icon": "$(output)"
+      },
+      {
+        "command": "openapiBreakingChanges.compareSelected",
+        "title": "Compare Specs for Breaking Changes",
+        "category": "OpenAPI Breaking Changes"
+      },
+      {
+        "command": "openapiBreakingChanges.fromDiffEditor",
+        "title": "Check This Diff for Breaking Changes",
+        "category": "OpenAPI Breaking Changes",
+        "icon": {
+          "light": "media/title-light.svg",
+          "dark": "media/title-dark.svg"
+        }
+      },
+      {
+        "command": "openapiBreakingChanges.showBaselineReport",
+        "title": "Show Changes Since Baseline",
+        "category": "OpenAPI Breaking Changes"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "openapiBreakingChanges.compareWithRef",
+        "key": "ctrl+k b",
+        "mac": "cmd+k b",
+        "when": "!terminalFocus && !isInDiffEditor && openapiBreakingChanges.isSpec"
+      },
+      {
+        "command": "openapiBreakingChanges.fromDiffEditor",
+        "key": "ctrl+k b",
+        "mac": "cmd+k b",
+        "when": "isInDiffEditor && openapiBreakingChanges.isSpec"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "openapiBreakingChanges.editorContext",
+        "label": "OpenAPI Breaking Changes"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "openapiBreakingChanges.compareSelected",
+          "when": "false"
+        },
+        {
+          "command": "openapiBreakingChanges.compareWithRef",
+          "when": "openapiBreakingChanges.isSpec && activeEditor != 'WebviewEditor'"
+        },
+        {
+          "command": "openapiBreakingChanges.compareWithHead",
+          "when": "openapiBreakingChanges.isSpec && activeEditor != 'WebviewEditor'"
+        },
+        {
+          "command": "openapiBreakingChanges.compareWithFile",
+          "when": "openapiBreakingChanges.isSpec && activeEditor != 'WebviewEditor'"
+        },
+        {
+          "command": "openapiBreakingChanges.fromDiffEditor",
+          "when": "isInDiffEditor"
+        },
+        {
+          "command": "openapiBreakingChanges.showBaselineReport",
+          "when": "openapiBreakingChanges.isSpec"
+        },
+        {
+          "command": "openapiBreakingChanges.releaseNotes",
+          "when": "openapiBreakingChanges.isSpec && activeEditor != 'WebviewEditor'"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "openapiBreakingChanges.compareSelected",
+          "when": "listMultiSelection && !explorerResourceIsFolder && resourceExtname =~ /^\\.(ya?ml|json)$/",
+          "group": "3_compare@40"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "openapiBreakingChanges.editorContext",
+          "when": "openapiBreakingChanges.isSpec && !isInDiffEditor",
+          "group": "3_compare@20"
+        }
+      ],
+      "openapiBreakingChanges.editorContext": [
+        {
+          "command": "openapiBreakingChanges.compareWithHead",
+          "group": "1@1"
+        },
+        {
+          "command": "openapiBreakingChanges.compareWithRef",
+          "group": "1@2"
+        },
+        {
+          "command": "openapiBreakingChanges.compareWithFile",
+          "group": "1@3"
+        },
+        {
+          "command": "openapiBreakingChanges.releaseNotes",
+          "group": "2@1"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "openapiBreakingChanges.fromDiffEditor",
+          "when": "isInDiffEditor && openapiBreakingChanges.isSpec",
+          "group": "navigation@-9"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "OpenAPI Breaking Changes",
+      "properties": {
+        "openapiBreakingChanges.ignore": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "A change id, such as `response-property-enum-value-added`. `*` matches any run of characters."
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Change id. `*` matches any run of characters, as in `*-deprecated`."
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Endpoint path, such as `/pets/{petId}`. `*` matches one segment, `**` any number."
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "HTTP method, such as `get`."
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "Why this is ignored. Shown in the report."
+                  }
+                }
+              }
+            ]
+          },
+          "markdownDescription": "Changes to leave out of the counts and the Problems panel. Each entry is a change id, or an object with any of `id`, `path` and `method`. Ignored changes stay visible in the report, dimmed. See the README for the list of ids.",
+          "scope": "resource"
+        },
+        "openapiBreakingChanges.treatWarningsAsErrors": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Count possibly breaking changes (warnings) as breaking.",
+          "scope": "resource"
+        },
+        "openapiBreakingChanges.detectMovedEndpoints": {
+          "type": "string",
+          "enum": [
+            "similar",
+            "operationId",
+            "off"
+          ],
+          "enumDescriptions": [
+            "An operation with the same operationId, or one that takes and returns nearly the same things, under another path",
+            "Only an operation with the same operationId under another path or method",
+            "A moved operation is reported as removed and added"
+          ],
+          "default": "similar",
+          "scope": "resource",
+          "markdownDescription": "How to recognise an endpoint that moved to another path: reported as one breaking `endpoint-moved` change that names both paths and says how it was matched, instead of a removed and an added endpoint."
+        },
+        "openapiBreakingChanges.baseRef": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "A Git branch, tag or commit to check open OpenAPI files against, such as `main` or `v2.0.0`. Breaking changes since that version show in the Problems panel. Empty turns the check off.",
+          "scope": "resource"
+        },
+        "openapiBreakingChanges.problemsLevel": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "enumDescriptions": [
+            "Only breaking changes",
+            "Breaking and possibly breaking changes",
+            "Every change"
+          ],
+          "default": "warning",
+          "markdownDescription": "Which changes the `#openapiBreakingChanges.baseRef#` check reports in the Problems panel.",
+          "scope": "resource"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node scripts/build.mjs && node --test test/*.test.mjs",
+    "package": "node scripts/build.mjs --prod && vsce package --no-dependencies",
+    "test:e2e": "npm run package && node test/e2e/run.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/vscode": "^1.90.0",
+    "@vscode/codicons": "0.0.36",
+    "@vscode/vsce": "^4.0.0",
+    "esbuild": "^0.28.2",
+    "ovsx": "^1.3.0",
+    "typescript": "^7.0.2",
+    "yaml": "^2.9.1"
+  }
+}
